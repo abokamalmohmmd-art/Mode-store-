@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">متجري | تسوق بسهولة</title>
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        /* شاشة الدخول */
+        .box { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; margin-top: 50px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 15px; outline: none; }
+        input:focus, select:focus { border-color: var(--primary); }
+        
+        .action-btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .action-btn:active { background: var(--primary-dark); }
+
+        .switch-btn { width: 100%; padding: 10px; background: transparent; color: var(--primary); border: 1px dashed var(--primary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 5px; }
+
+        /* واجهة المتجر */
+        .app-section { display: none; }
+        header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 15px; }
+        
+        .hero-banner { background: linear-gradient(135deg, #ccfbf1, #99f6e4); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .hero-banner h2 { margin: 0 0 5px; color: #134e4a; }
+        .hero-banner p { margin: 0; font-size: 14px; color: #115e59; }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .card { background: white; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; }
+        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; background: #e2e8f0; }
+        .badge { background: #ccfbf1; color: #0f766e; font-size: 11px; padding: 3px 8px; border-radius: 6px; display: inline-block; margin: 5px 0; font-weight: bold; }
+        .card h4 { margin: 5px 0; font-size: 15px; }
+        .card p { margin: 3px 0; font-size: 13px; color: #64748b; }
+        .price { font-weight: bold; color: var(--primary); font-size: 14px; margin: 5px 0; }
+
+        /* السلة */
+        .cart-box { background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .cart-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+
+        /* لوحة التحكم */
+        .admin-card { background: #1e293b; color: white; padding: 20px; border-radius: 12px; }
+        .admin-card input, .admin-card select { background: #334155; color: white; border: none; }
+        .admin-card hr { border-color: #334155; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. شاشة تسجيل الدخول / إنشاء حساب -->
+        <div class="box" id="auth-box">
+            <h2 id="auth-title">تسجيل دخول الزبائن</h2>
+            <input type="text" id="auth-user" placeholder="اسم المستخدم أو رقم الهاتف">
+            <input type="password" id="auth-pass" placeholder="كلمة المرور">
+            <button class="action-btn" id="auth-btn">دخول</button>
+            <button class="switch-btn" id="switch-auth-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
+        </div>
+
+        <!-- 2. واجهة المتجر للعميل -->
+        <div class="app-section" id="customer-section">
+            <header>
+                <h3 id="store-title-view" style="margin:0; color:var(--primary);">متجري</h3>
+                <button id="logout-btn" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;">خروج</button>
+            </header>
+
+            <div class="hero-banner">
+                <h2 id="banner-title">أهلاً بك في متجرك المفضل</h2>
+                <p>تصفح المنتجات واختر ما يناسبك، ثم أرسل طلبك عبر واتساب بسهولة.</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="ابحث عن منتج..." style="margin:0;">
+                <select id="category-filter" style="margin:0; width: 140px;">
+                    <option value="all">كل الأقسام</option>
+                    <option value="إكسسوارات">إكسسوارات</option>
+                    <option value="حقائب">حقائب</option>
+                    <option value="إلكترونيات">إلكترونيات</option>
+                </select>
+            </div>
+
+            <div class="grid" id="products-grid"></div>
+
+            <div class="cart-box">
+                <h3 style="margin-top:0;">🛒 سلة طلباتك</h3>
+                <div id="cart-items-list" style="color: #64748b; font-size: 13px;">السلة فارغة حالياً</div>
+                <hr style="border:0; border-top:1px solid #f1f5f9; margin:10px 0;">
+                <p><strong>الإجمالي: <span id="cart-total-price">0</span> ج.م</strong></p>
+                <input type="text" id="buyer-name" placeholder="اسمك الكريم">
+                <input type="text" id="buyer-phone" placeholder="رقم هاتفك">
+                <input type="text" id="buyer-address" placeholder="عنوان التوصيل بالتفصيل">
+                <button class="action-btn" id="whatsapp-order-btn" style="background: #25d366;">إتمام الطلب عبر واتساب 📱</button>
+            </div>
+        </div>
+
+        <!-- 3. لوحة تحكم المالك -->
+        <div class="app-section" id="admin-section">
+            <div class="admin-card">
+                <h2>🛠️ لوحة تحكم المالك</h2>
+                <p style="color:#94a3b8; font-size:13px;">تحكم كامل بمنتجات وإعدادات متجرك.</p>
+                
+                <hr>
+                <h3>⚙️ إعدادات المتجر</h3>
+                <input type="text" id="admin-store-name" placeholder="اسم المتجر الجديد">
+                <input type="text" id="admin-whatsapp" placeholder="رقم واتساب تلقي الطلبات (مثال: 2010xxxxxxxx)">
+                <button class="action-btn" id="save-settings-btn" style="background:#f59e0b;">حفظ الإعدادات</button>
+
+                <hr>
+                <h3>➕ إضافة منتج جديد</h3>
+                <input type="text" id="p-name" placeholder="اسم المنتج">
+                <input type="number" id="p-price" placeholder="السعر (ج.م)">
+                <select id="p-cat">
+                    <option value="إكسسوارات">إكسسوارات</option>
+                    <option value="حقائب">حقائب</option>
+                    <option value="إلكترونيات">إلكترونيات</option>
+                </select>
+                <input type="text" id="p-desc" placeholder="وصف قصير للمنتج">
+                <input type="text" id="p-img" placeholder="رابط صورة المنتج (اختياري)">
+                <button class="action-btn" id="add-product-btn" style="background:#3b82f6;">نشر المنتج</button>
+
+                <hr>
+                <button class="action-btn" id="admin-logout-btn" style="background:#ef4444; margin-top:10px;">تسجيل خروج الإدارة</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة البيانات الأولية إذا لم تكن موجودة
+        if (!localStorage.getItem('products')) {
+            localStorage.setItem('products', JSON.stringify([
+                {id: 1, name: "حقیبة يومية", price: 250, cat: "حقائب", desc: "مثال تجريبي لمنتج", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300"},
+                {id: 2, name: "زجاجة مياه", price: 120, cat: "إكسسوارات", desc: "مثال تجريبي لمنتج", img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=300"}
+            ]));
+        }
+        if (!localStorage.getItem('admin_user')) {
+            localStorage.setItem('admin_user', 'admin');
+            localStorage.setItem('admin_pass', '123456');
+            localStorage.setItem('store_name', 'متجري الذكي');
+            localStorage.setItem('store_whatsapp', '201000000000');
+        }
+
+        let isRegister = false;
+        let cart = [];
+
+        // تشغيل التطبيق وتوزيع الأحداث
+        window.addEventListener('DOMContentLoaded', () => {
+            updateStaticTexts();
+            
+            document.getElementById('auth-btn').addEventListener('click', handleAuth);
+            document.getElementById('switch-auth-btn').addEventListener('click', toggleAuthMode);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('admin-logout-btn').addEventListener('click', logout);
+            document.getElementById('whatsapp-order-btn').addEventListener('click', sendWhatsAppOrder);
+            document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+            document.getElementById('add-product-btn').addEventListener('click', addProduct);
+            
+            document.getElementById('search-input').addEventListener('input', renderProducts);
+            document.getElementById('category-filter').addEventListener('change', renderProducts);
+        });
+
+        function updateStaticTexts() {
+            const name = localStorage.getItem('store_name');
+            document.getElementById('store-title-view').innerText = name;
+            document.getElementById('page-title').innerText = name;
+        }
+
+        function toggleAuthMode() {
+            isRegister = !isRegister;
+            document.getElementById('auth-title').innerText = isRegister ? "إنشاء حساب جديد" : "تسجيل دخول الزبائن";
+            document.getElementById('auth-btn').innerText = isRegister ? "تسجيل" : "دخول";
+            document.getElementById('switch-auth-btn').innerText = isRegister ? "لديك حساب؟ سجل دخولك" : "ليس لديك حساب؟ أنشئ حساباً جديداً";
+        }
+
+        function handleAuth() {
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            if(!u || !p) return alert('الرجاء إدخال البيانات كاملة');
+
+            // فحص حساب المدير
+            if(u === localStorage.getItem('admin_user') && p === localStorage.getItem('admin_pass')) {
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('admin-section').style.display = 'block';
+                document.getElementById('admin-store-name').value = localStorage.getItem('store_name');
+                document.getElementById('admin-whatsapp').value = localStorage.getItem('store_whatsapp');
+                return;
+            }
+
+            if(isRegister) {
+                localStorage.setItem('user_' + u, p);
+                alert('تم إنشاء الحساب بنجاح!');
+                toggleAuthMode();
+            } else {
+                const savedPass = localStorage.getItem('user_' + u);
+                if(savedPass && savedPass === p) {
+                    startCustomerApp(u);
+                } else {
+                    alert('خطأ في اسم المستخدم أو كلمة المرور');
+                }
+            }
+        }
+
+        function startCustomerApp(username) {
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('customer-section').style.display = 'block';
+            document.getElementById('buyer-name').value = username;
+            renderProducts();
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const cat = document.getElementById('category-filter').value;
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+
+            let filtered = products.filter(p => {
+                let matchSearch = p.name.toLowerCase().includes(search);
+                let matchCat = (cat === 'all' || p.cat === cat);
+                return matchSearch && matchCat;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#64748b;">لا توجد منتجات مطابقة</p>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(p => {
+                html += `
+                    <div class="card">
+                        <div>
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'}" alt="${p.name}">
+                            <span class="badge">${p.cat}</span>
+                            <h4>${p.name}</h4>
+                            <p>${p.desc || ''}</p>
+                        </div>
+                        <div>
+                            <div class="price">${p.price} ج.م</div>
+                            <button class="action-btn" onclick="addToCart('${p.name}', ${p.price})" style="padding:8px; font-size:13px; margin:0;">+ أضف</button>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items-list');
+            const totalView = document.getElementById('cart-total-price');
+            if(cart.length === 0) {
+                list.innerHTML = 'السلة فارغة حالياً';
+                totalView.innerText = '0';
+                return;
+            }
+            let html = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                html += `<div class="cart-item"><span>${item.name}</span> <span>${item.price} ج.م</span></div>`;
+                total += item.price;
+            });
+            list.innerHTML = html;
+            totalView.innerText = total;
+        }
+
+        function sendWhatsAppOrder() {
+            if(cart.length === 0) return alert('السلة فارغة!');
+            const name = document.getElementById('buyer-name').value.trim();
+            const phone = document.getElementById('buyer-phone').value.trim();
+            const address = document.getElementById('buyer-address').value.trim();
+
+            if(!name || !phone || !address) return alert('الرجاء إكمال البيانات (الاسم، الهاتف، العنوان)');
+
+            let text = `📦 *طلب جديد من المتجر*\n\n*العميل:* ${name}\n*الهاتف:* ${phone}\n*العنوان:* ${address}\n\n*المنتجات:* \n`;
+            let total = 0;
+            cart.forEach(i => {
+                text += `- ${i.name} (${i.price} ج.م)\n`;
+                total += i.price;
+            });
+            text += `\n*الإجمالي الكلي:* ${total} ج.م`;
+
+            const ownerWhatsApp = localStorage.getItem('store_whatsapp');
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/${ownerWhatsApp}?text=${encoded}`, '_blank');
+        }
+
+        function saveSettings() {
+            const sName = document.getElementById('admin-store-name').value.trim();
+            const sWa = document.getElementById('admin-whatsapp').value.trim();
+            if(sName) localStorage.setItem('store_name', sName);
+            if(sWa) localStorage.setItem('store_whatsapp', sWa);
+            alert('تم حفظ الإعدادات بنجاح!');
+            updateStaticTexts();
+        }
+
+        function addProduct() {
+            const name = document.getElementById('p-name').value.trim();
+            const price = parseFloat(document.getElementById('p-price').value);
+            const cat = document.getElementById('p-cat').value;
+            const desc = document.getElementById('p-desc').value.trim();
+            const img = document.getElementById('p-img').value.trim();
+
+            if(!name || isNaN(price)) return alert('الرجاء كتابة اسم المنتج والسعر بشكل صحيح');
+
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+            products.push({ id: Date.now(), name, price, cat, desc, img });
+            localStorage.setItem('products', JSON.stringify(products));
+
+            alert('تم نشر المنتج بنجاح!');
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('p-img').value = '';
+        }
+    </script>
+</body>
+</html>
